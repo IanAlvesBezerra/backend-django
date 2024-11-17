@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "django_filters",
     # Habilita Token Authentication
     'rest_framework.authtoken',
+    # Habilita OpenAPI
+    'drf_spectacular',
     # Habilita Toys application
     'toys.apps.ToysConfig',
     # Habilita Drones application
@@ -135,16 +137,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "drones.pagination.LimitOffsetPaginationWithUpperBound",
     "PAGE_SIZE": 4,
-    
     "DEFAULT_FILTER_BACKENDS": (
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.OrderingFilter",
         "rest_framework.filters.SearchFilter",
-        
     ),
-
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
+    "DEFAULT_THROTTLE_CLASSES": (
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "3/hour",
+        "user": "10/hour",
+        "drones": "20/hour",
+        "pilots": "15/hour",
+    },
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+	"TITLE": "RESTIC Back-end API",
+	"DESCRIPTION": "Your project description",
+	"VERSION": "1.0.0",
+	"SERVE_INCLUDE_SCHEMA": False,
+	# OTHER SETTINGS
+    "AUTHENTICATION_WHITELIST": [
+        # Lista de autenticações suportadas na documentação
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "SWAGGER_UI_SETTINGS": {
+        "persistAuthorization": True,  # Mantém a autorização no Swagger UI durante as requisições
+    },
 }

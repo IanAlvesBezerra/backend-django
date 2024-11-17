@@ -15,6 +15,7 @@ from rest_framework import permissions
 from drones import custom_permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.throttling import ScopedRateThrottle
 
 class ApiRoot(generics.GenericAPIView):
     name = "api-root"
@@ -36,6 +37,8 @@ class DroneCategoryViewSet(viewsets.ModelViewSet):
     ordering_fields = ("name",)
 
 class DroneList(generics.ListCreateAPIView):
+    throttle_scope = "drones"
+    throttle_classes = (ScopedRateThrottle,)
     queryset = Drone.objects.all()
     serializer_class = DroneSerializer
     name = "drone-list"
@@ -59,6 +62,8 @@ class DroneList(generics.ListCreateAPIView):
         serializer.save(owner=self.request.user)
 
 class DroneDetail(generics.RetrieveUpdateDestroyAPIView):
+    throttle_scope = "drones"
+    throttle_classes = (ScopedRateThrottle,)
     queryset = Drone.objects.all()
     serializer_class = DroneSerializer
     name = "drone-detail"
@@ -68,6 +73,8 @@ class DroneDetail(generics.RetrieveUpdateDestroyAPIView):
     )
 
 class PilotList(generics.ListCreateAPIView):
+    throttle_scope = "pilots"
+    throttle_classes = (ScopedRateThrottle,)
     queryset = Pilot.objects.all()
     serializer_class = PilotSerializer
     name = "pilot-list"
@@ -82,6 +89,8 @@ class PilotList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
 class PilotDetail(generics.RetrieveUpdateDestroyAPIView):
+    throttle_scope = "pilots"
+    throttle_classes = (ScopedRateThrottle,)
     queryset = Pilot.objects.all()
     serializer_class = PilotSerializer
     name = "pilot-detail"
